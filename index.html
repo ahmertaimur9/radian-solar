@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Radian Solar">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<title>Radian Solar Solutions</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #000; background: #fff;
+    font-size: 15px; line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior: none;
+  }
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: #000; color: #fff;
+    padding: 12px 16px;
+    padding-top: calc(12px + env(safe-area-inset-top));
+    display: flex; align-items: center; gap: 12px;
+    min-height: 56px;
+  }
+  .topbar .brand-mini { flex: 1; font-weight: 700; font-size: 15px; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .topbar .doc-type-pill { background: #fff; color: #000; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .menu-btn { background: none; border: none; color: #fff; font-size: 24px; padding: 8px; cursor: pointer; line-height: 1; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; }
+
+  .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+  .menu-overlay.open { opacity: 1; pointer-events: auto; }
+  .menu-panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(320px, 85vw); background: #fff; color: #000; z-index: 201; transform: translateX(100%); transition: transform 0.25s ease; overflow-y: auto; padding: 20px; padding-top: calc(20px + env(safe-area-inset-top)); padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+  .menu-panel.open { transform: translateX(0); }
+  .menu-panel h3 { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; margin: 18px 0 10px; padding-bottom: 6px; border-bottom: 1px solid #000; }
+  .menu-panel h3:first-child { margin-top: 0; }
+  .menu-panel select, .menu-panel label, .menu-panel button { display: block; width: 100%; background: #fff; color: #000; border: 1px solid #000; padding: 12px 14px; margin-bottom: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 4px; font-family: inherit; text-align: left; min-height: 44px; }
+  .menu-panel button.primary { background: #000; color: #fff; }
+  .menu-panel label { display: block; cursor: pointer; }
+  .menu-panel input[type="file"] { display: none; }
+  .menu-close { position: absolute; top: 12px; right: 12px; background: none; border: none; font-size: 28px; width: 44px; height: 44px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+  .bottombar { position: fixed; bottom: 0; left: 0; right: 0; background: #000; color: #fff; padding: 10px 12px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); display: flex; gap: 8px; z-index: 99; border-top: 1px solid #333; }
+  .bottombar button { flex: 1; background: #fff; color: #000; border: none; padding: 12px 8px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 4px; font-family: inherit; min-height: 44px; letter-spacing: 0.5px; }
+
+  .doc { max-width: 820px; margin: 0 auto; padding: 20px 16px 100px; background: #fff; }
+  @media (min-width: 700px) { .doc { padding: 40px 48px 60px; margin: 20px auto; } }
+
+  .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding-bottom: 18px; border-bottom: 2px solid #000; flex-wrap: wrap; }
+  .brand { flex: 1; min-width: 200px; }
+  .logo-wrap { width: 120px; height: auto; min-height: 60px; display: flex; align-items: center; justify-content: center; border: 1px dashed #999; padding: 6px; text-align: center; font-size: 10px; color: #888; overflow: hidden; margin-bottom: 8px; }
+  .logo-wrap img { max-width: 100%; max-height: 80px; display: block; }
+  .company-name { font-size: 20px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+  @media (min-width: 700px) { .company-name { font-size: 26px; } .logo-wrap { width: 140px; } }
+  .company-tag { font-size: 10px; letter-spacing: 2px; margin-top: 2px; }
+  .company-info { font-size: 11px; margin-top: 8px; line-height: 1.55; }
+
+  .doc-title { text-align: left; }
+  @media (min-width: 700px) { .doc-title { text-align: right; } }
+  .doc-title h1 { font-size: 24px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+  @media (min-width: 700px) { .doc-title h1 { font-size: 34px; letter-spacing: 3px; } }
+  .doc-meta { font-size: 12px; margin-top: 6px; }
+  .doc-meta div { margin: 2px 0; }
+  .doc-meta strong { display: inline-block; min-width: 85px; }
+
+  .section { margin-top: 22px; }
+  .section-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; padding-bottom: 4px; border-bottom: 1px solid #000; margin-bottom: 8px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  @media (min-width: 700px) { .two-col { grid-template-columns: 1fr 1fr; gap: 30px; } }
+  .client-block, .ship-block { font-size: 13px; line-height: 1.6; }
+  .client-block .label, .ship-block .label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
+
+  [contenteditable="true"] { outline: none; border-bottom: 1px dotted transparent; transition: border-color 0.15s; min-height: 1.2em; }
+  [contenteditable="true"]:focus { border-bottom-color: #000; background: #f8f8f8; }
+
+  .items-desktop { display: none; }
+  .items-mobile { display: block; }
+  @media (min-width: 700px) { .items-desktop { display: block; } .items-mobile { display: none; } }
+
+  .item-card { border: 1px solid #000; padding: 12px; margin-bottom: 10px; position: relative; background: #fff; }
+  .item-card .card-num { position: absolute; top: -10px; left: 10px; background: #000; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; letter-spacing: 1px; }
+  .item-card .card-del { position: absolute; top: 4px; right: 4px; background: none; border: none; font-size: 20px; font-weight: 700; width: 32px; height: 32px; cursor: pointer; color: #000; }
+  .item-card .card-desc { 
+    font-size: 14px; margin-top: 6px; padding-bottom: 8px; border-bottom: 1px dashed #ccc; min-height: 2em;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+  .item-card .card-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; font-size: 12px; }
+  .item-card .card-cell { text-align: center; }
+  .item-card .card-cell .cell-label { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: #555; margin-bottom: 2px; }
+  .item-card .card-cell .cell-val { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  table.items { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.items th { background: #000; color: #fff; text-align: left; padding: 8px 10px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; }
+  table.items th.num, table.items td.num { text-align: right; }
+  table.items td { 
+    padding: 10px; border-bottom: 1px solid #ddd; vertical-align: top;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+  table.items tr:last-child td { border-bottom: 1px solid #000; }
+  table.items .desc { width: 55%; }
+  table.items .qty, table.items .rate { width: 15%; }
+  table.items .amt { width: 15%; }
+  .del-btn { background: none; border: none; color: #000; cursor: pointer; font-size: 18px; font-weight: 700; padding: 4px 8px; min-width: 32px; min-height: 32px; }
+
+  .totals { margin-top: 16px; display: flex; justify-content: flex-end; }
+  .totals table { width: 100%; max-width: 320px; font-size: 13px; border-collapse: collapse; }
+  @media (max-width: 699px) { .totals table { max-width: 100%; } }
+  .totals td { padding: 6px 10px; }
+  .totals td.lbl { text-align: left; color: #333; }
+  .totals td.val { text-align: right; font-variant-numeric: tabular-nums; }
+  .totals tr.grand td { border-top: 2px solid #000; font-size: 16px; font-weight: 700; padding-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
+
+  .terms-grid { display: grid; grid-template-columns: 1fr; gap: 18px; font-size: 12px; line-height: 1.6; }
+  @media (min-width: 700px) { .terms-grid { grid-template-columns: 1fr 1fr; gap: 30px; } }
+  .terms-grid .label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; margin-bottom: 6px; }
+  .terms-grid ol { padding-left: 18px; }
+  .terms-grid li { margin-bottom: 4px; word-wrap: break-word; overflow-wrap: break-word; }
+
+  .signature { margin-top: 30px; display: grid; grid-template-columns: 1fr; gap: 30px; }
+  @media (min-width: 700px) { .signature { grid-template-columns: 1fr 1fr; gap: 40px; } }
+  .sig-box { border-top: 1px solid #000; padding-top: 6px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+
+  .foot { margin-top: 30px; padding-top: 12px; border-top: 1px solid #ccc; text-align: center; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: #555; }
+
+  .toast { position: fixed; bottom: calc(80px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 12px 20px; font-size: 13px; z-index: 9999; border-radius: 4px; max-width: 90vw; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+
+  .page-warning { background: #000; color: #fff; padding: 10px 14px; margin: 10px 16px; font-size: 12px; border-radius: 4px; display: none; }
+  .page-warning.show { display: block; }
+
+  @media print {
+    @page { size: A4; margin: 10mm 12mm; }
+    html, body { font-size: 9.5px; line-height: 1.35; }
+    body { padding: 0 !important; }
+
+    .topbar, .bottombar, .menu-overlay, .menu-panel, .no-print, .page-warning { display: none !important; }
+
+    .doc { margin: 0 !important; padding: 0 !important; max-width: 100% !important; }
+
+    .head { padding-bottom: 6px !important; margin-bottom: 0 !important; border-bottom-width: 1.5px !important; gap: 10px !important; }
+    .logo-wrap { width: 60px !important; min-height: 30px !important; border: none !important; padding: 0 !important; margin-bottom: 2px !important; }
+    .logo-wrap img { max-height: 36px !important; }
+    .company-name { font-size: 14px !important; letter-spacing: 0.3px !important; margin-top: 0 !important; }
+    .company-tag { font-size: 7px !important; letter-spacing: 1px !important; margin-top: 0 !important; }
+    .company-info { font-size: 8px !important; line-height: 1.3 !important; margin-top: 3px !important; }
+
+    .doc-title { text-align: right !important; }
+    .doc-title h1 { font-size: 18px !important; letter-spacing: 2px !important; margin: 0 !important; }
+    .doc-meta { font-size: 8.5px !important; margin-top: 3px !important; }
+    .doc-meta div { margin: 1px 0 !important; }
+    .doc-meta strong { min-width: 60px !important; }
+
+    .section { margin-top: 8px !important; }
+    .section-title { font-size: 8px !important; letter-spacing: 1px !important; padding-bottom: 2px !important; margin-bottom: 3px !important; }
+
+    .two-col { grid-template-columns: 1fr 1fr !important; gap: 14px !important; }
+    .client-block, .ship-block { font-size: 8.5px !important; line-height: 1.35 !important; }
+    .client-block .label, .ship-block .label { font-size: 7.5px !important; letter-spacing: 1px !important; margin-bottom: 1px !important; }
+
+    .subject-text { font-size: 8.5px !important; }
+
+    .items-desktop { display: block !important; }
+    .items-mobile { display: none !important; }
+
+    table.items { font-size: 8.5px !important; margin-top: 0 !important; }
+    table.items th {
+      padding: 3px 5px !important;
+      font-size: 7.5px !important;
+      letter-spacing: 0.5px !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    table.items td {
+      padding: 3px 5px !important;
+      border-bottom: 0.5px solid #bbb !important;
+      line-height: 1.25 !important;
+      vertical-align: top !important;
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+      white-space: normal !important;
+    }
+    table.items tr:last-child td { border-bottom: 1px solid #000 !important; }
+    table.items .desc { 
+      width: 58% !important;
+      word-break: break-word !important;
+      hyphens: auto !important;
+      -webkit-hyphens: auto !important;
+    }
+    table.items .qty, table.items .rate, table.items .amt { width: 14% !important; }
+
+    [contenteditable="true"] { border-bottom-color: transparent !important; background: transparent !important; }
+    .logo-wrap { border: none !important; }
+
+    .totals { margin-top: 6px !important; }
+    .totals table { font-size: 8.5px !important; max-width: 220px !important; }
+    .totals td { padding: 2px 6px !important; }
+    .totals tr.grand td { font-size: 10.5px !important; padding-top: 4px !important; border-top-width: 1.5px !important; letter-spacing: 0.5px !important; }
+
+    #amtWords { font-size: 8px !important; font-style: italic !important; margin-top: 2px !important; }
+
+    .terms-grid { grid-template-columns: 1fr 1fr !important; gap: 12px !important; font-size: 7.8px !important; line-height: 1.3 !important; }
+    .terms-grid .label { font-size: 7.5px !important; letter-spacing: 1px !important; margin-bottom: 2px !important; }
+    .terms-grid ol { padding-left: 12px !important; }
+    .terms-grid li { margin-bottom: 1px !important; }
+
+    .bank-text { font-size: 8px !important; line-height: 1.35 !important; }
+
+    .signature { margin-top: 12px !important; grid-template-columns: 1fr 1fr !important; gap: 30px !important; }
+    .sig-box { font-size: 8px !important; padding-top: 3px !important; letter-spacing: 0.5px !important; }
+    .sig-box .sig-auth { margin-top: 10px !important; font-size: 7.5px !important; }
+
+    .foot { margin-top: 8px !important; padding-top: 4px !important; font-size: 7px !important; letter-spacing: 0.5px !important; }
+
+    .head, .section { page-break-inside: avoid; break-inside: avoid; }
+    table.items { page-break-inside: auto; }
+    table.items tr { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar no-print">
+  <div class="brand-mini">Radian Solar</div>
+  <div class="doc-type-pill" id="docTypePill">QUOTATION</div>
+  <button class="menu-btn" id="menuOpen" aria-label="Menu">☰</button>
+</div>
+
+<!-- MENU -->
+<div class="menu-overlay" id="menuOverlay"></div>
+<div class="menu-panel" id="menuPanel">
+  <button class="menu-close" id="menuClose" aria-label="Close">×</button>
+
+  <h3>Document Type</h3>
+  <select id="docType">
+    <option value="QUOTATION">Quotation</option>
+    <option value="INVOICE">Invoice</option>
+    <option value="BILL">Bill</option>
+    <option value="PROFORMA INVOICE">Proforma Invoice</option>
+  </select>
+
+  <h3>Logo</h3>
+  <label for="logoInput">📷 Upload / Change Logo</label>
+  <input type="file" id="logoInput" accept="image/*">
+
+  <h3>Items</h3>
+  <button id="addRow">+ Add Item</button>
+
+  <h3>Files</h3>
+  <button id="downloadBtn">💾 Download JSON (Auto-named)</button>
+  <label for="uploadInput">📂 Upload JSON File</label>
+  <input type="file" id="uploadInput" accept=".json">
+
+  <h3>Session</h3>
+  <button id="saveBtn">Save to Browser</button>
+  <button id="loadBtn">Load from Browser</button>
+  <button id="newBtn" class="primary">✨ New Document (saves current)</button>
+  <button id="clearBtn">🗑 Clear Everything</button>
+
+  <h3>Output</h3>
+  <button id="printBtn" class="primary">🖨 Print / Save as PDF</button>
+</div>
+
+<!-- WARNING -->
+<div class="page-warning" id="pageWarning">
+  ⚠️ Many items or long descriptions detected. The document may spill to page 2. Consider reducing items or shortening text.
+</div>
+
+<!-- DOCUMENT -->
+<div class="doc" id="doc">
+
+  <div class="head">
+    <div class="brand">
+      <div class="logo-wrap" id="logoWrap">
+        <span id="logoPlaceholder">Your Logo</span>
+        <img id="logoImg" style="display:none" alt="Logo">
+      </div>
+      <div class="company-name" contenteditable="true">Radian Solar Solutions</div>
+      <div class="company-tag" contenteditable="true">Powering Tomorrow, Today</div>
+      <div class="company-info" contenteditable="true">
+        123 Green Energy Avenue, Suite 4, City, State — 000000<br>
+        Phone: +91 00000 00000 | Email: info@radiansolar.com<br>
+        GSTIN: 00AAAAA0000A0A0 | www.radiantsolar.com
+      </div>
+    </div>
+
+    <div class="doc-title">
+      <h1 id="docTitle" contenteditable="true">QUOTATION</h1>
+      <div class="doc-meta">
+        <div><strong>Doc No:</strong> <span contenteditable="true" id="docNumber">RSQ-2026-0001</span></div>
+        <div><strong>Date:</strong> <span contenteditable="true" id="docDate">16 Oct 2026</span></div>
+        <div id="validRow"><strong>Valid Until:</strong> <span contenteditable="true">15 Nov 2026</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="two-col">
+      <div class="client-block">
+        <div class="label">Billed / Quoted To</div>
+        <div contenteditable="true" id="clientInfo">
+          <strong>Client Name</strong><br>
+          Company / Residence<br>
+          Address Line 1, City — PIN<br>
+          Phone: +91 00000 00000 | Email: client@example.com
+        </div>
+      </div>
+      <div class="ship-block">
+        <div class="label">Site / Installation Address</div>
+        <div contenteditable="true">
+          <strong>Installation Site</strong><br>
+          Rooftop / Ground Mounted<br>
+          Plot No., Street, City — PIN<br>
+          Contact: — | Phone: —
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Subject</div>
+    <div contenteditable="true" class="subject-text" style="font-size:13px;">
+      Supply, installation and commissioning of Solar PV System along with all allied accessories, structures, wiring, testing and net-meter liaison.
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Scope of Work / Items</div>
+    <div class="items-mobile" id="itemsMobile"></div>
+    <div class="items-desktop">
+      <table class="items">
+        <thead>
+          <tr>
+            <th style="width:5%">#</th>
+            <th class="desc">Description</th>
+            <th class="num qty">Qty</th>
+            <th class="num rate">Unit Price</th>
+            <th class="num amt">Amount</th>
+            <th class="no-print" style="width:30px"></th>
+          </tr>
+        </thead>
+        <tbody id="itemsBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="totals">
+    <table>
+      <tr><td class="lbl">Subtotal</td><td class="val" id="subtotal">0.00</td></tr>
+      <tr>
+        <td class="lbl">Tax <span contenteditable="true" style="font-size:11px;">(GST 18%)</span></td>
+        <td class="val" id="tax">0.00</td>
+      </tr>
+      <tr>
+        <td class="lbl">Discount <span contenteditable="true" style="font-size:11px;">(if any)</span></td>
+        <td class="val" id="discount">0.00</td>
+      </tr>
+      <tr class="grand">
+        <td class="lbl">Grand Total</td>
+        <td class="val" id="grand">0.00</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section" style="margin-top:6px;">
+    <div style="font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:2px;">Amount in Words</div>
+    <div contenteditable="true" id="amtWords" style="font-size:13px; font-style:italic;">—</div>
+  </div>
+
+  <div class="section">
+    <div class="terms-grid">
+      <div>
+        <div class="label">Terms &amp; Conditions</div>
+        <ol id="termsList" contenteditable="true">
+          <li>Prices valid for 30 days from date of issue.</li>
+          <li>50% advance with work order; balance before commissioning.</li>
+          <li>Delivery &amp; installation: 20–30 working days from advance &amp; site readiness.</li>
+          <li>Net-meter, discom liaison and subsidy paperwork borne by client unless stated.</li>
+          <li>Civil/structural/electrical upgrades at site charged extra at actuals.</li>
+          <li>Taxes as per GoI norms at time of invoicing.</li>
+          <li>Force majeure / discom / weather delays beyond our control.</li>
+        </ol>
+      </div>
+      <div>
+        <div class="label">Warranty Terms</div>
+        <ol id="warrantyList" contenteditable="true">
+          <li>Solar Modules: 25 yrs performance + 12 yrs product (OEM).</li>
+          <li>On-Grid Inverter: 5 yrs standard (10 yrs optional).</li>
+          <li>Mounting Structure: 10 yrs against corrosion &amp; defects.</li>
+          <li>Workmanship &amp; installation: 2 yrs comprehensive.</li>
+          <li>Excludes natural calamity, theft, misuse, unauthorized mods.</li>
+          <li>AMC available separately post-warranty.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Bank Details</div>
+    <div contenteditable="true" class="bank-text" style="font-size:12px; line-height:1.7;">
+      <strong>A/C Name:</strong> Radian Solar Solutions &nbsp;|&nbsp;
+      <strong>Bank:</strong> Your Bank &nbsp;|&nbsp;
+      <strong>A/c No.:</strong> 0000 0000 0000 0000 &nbsp;|&nbsp;
+      <strong>IFSC:</strong> ABCD0000000 &nbsp;|&nbsp;
+      <strong>UPI:</strong> radiantsolar@upi
+    </div>
+  </div>
+
+  <div class="signature">
+    <div class="sig-box">Client's Signature &amp; Seal</div>
+    <div class="sig-box" style="text-align:right;">
+      For <span contenteditable="true" style="display:inline; text-transform:none; letter-spacing:0;">Radian Solar Solutions</span>
+      <div class="sig-auth" style="margin-top:24px; font-size:11px;">Authorized Signatory</div>
+    </div>
+  </div>
+
+  <div class="foot">
+    Computer-generated document &nbsp;•&nbsp; Thank you for choosing Radian Solar Solutions
+  </div>
+</div>
+
+<!-- BOTTOM BAR -->
+<div class="bottombar no-print">
+  <button id="addRowBottom">+ Item</button>
+  <button id="saveBtnBottom">Save</button>
+  <button id="downloadBtnBottom">Download</button>
+  <button id="printBtnBottom">Print</button>
+</div>
+
+<script>
+const STORAGE_KEY = 'radian_solar_doc_v3';
+const LOGO_KEY    = 'radian_solar_logo_v1';
+const COUNTER_KEY = 'radian_counter_v1';
+
+const $ = (id) => document.getElementById(id);
+const docTypeSel = $('docType');
+const itemsBody  = $('itemsBody');
+const itemsMobile = $('itemsMobile');
+
+const defaultItems = [
+  { desc: 'Mono PERC Solar PV Module — 545 Wp (Tier-1, IEC certified, polycrystalline silicon cells with anti-reflective coating)', qty: 10, rate: 22000 },
+  { desc: 'On-Grid Solar Inverter — 5 kW, 1-phase with Wi-Fi monitoring, IP65 rated, multiple MPPT trackers', qty: 1,  rate: 45000 },
+  { desc: 'GI Hot-Dip Galvanized Mounting Structure — customized as per site survey, wind-load certified', qty: 1,  rate: 28000 },
+  { desc: 'DC/AC Cables, Lightning Arrester, DCDB, ACDB, Earthing & Lightning Protection Kit complete', qty: 1,  rate: 18000 },
+  { desc: 'Installation, Commissioning, Testing & Net-Meter Liaison with discom including all documentation', qty: 1,  rate: 15000 }
+];
+
+$('menuOpen').addEventListener('click', () => {
+  $('menuOverlay').classList.add('open');
+  $('menuPanel').classList.add('open');
+});
+function closeMenu() {
+  $('menuOverlay').classList.remove('open');
+  $('menuPanel').classList.remove('open');
+}
+$('menuClose').addEventListener('click', closeMenu);
+$('menuOverlay').addEventListener('click', closeMenu);
+
+function getNextNumber(docType) {
+  const prefixes = { 'QUOTATION': 'RSQ', 'INVOICE': 'RSI', 'BILL': 'RSB', 'PROFORMA INVOICE': 'RSP' };
+  const prefix = prefixes[docType] || 'RSQ';
+  const year = new Date().getFullYear();
+  let counter = {};
+  try { counter = JSON.parse(localStorage.getItem(COUNTER_KEY) || '{}'); } catch(e) { counter = {}; }
+  if (!counter[prefix]) counter[prefix] = 0;
+  counter[prefix]++;
+  try { localStorage.setItem(COUNTER_KEY, JSON.stringify(counter)); } catch(e) {}
+  return `${prefix}-${year}-${String(counter[prefix]).padStart(4, '0')}`;
+}
+
+function renderItems(items) {
+  itemsBody.innerHTML = '';
+  items.forEach((it, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td class="desc" contenteditable="true">${it.desc}</td>
+      <td class="num qty" contenteditable="true" data-type="num" inputmode="decimal">${it.qty}</td>
+      <td class="num rate" contenteditable="true" data-type="num" inputmode="decimal">${it.rate}</td>
+      <td class="num amt">${fmt(it.qty * it.rate)}</td>
+      <td class="no-print"><button class="del-btn" title="Remove">×</button></td>
+    `;
+    itemsBody.appendChild(tr);
+  });
+
+  itemsMobile.innerHTML = '';
+  items.forEach((it, i) => {
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.innerHTML = `
+      <div class="card-num">#${i + 1}</div>
+      <button class="card-del no-print" title="Remove">×</button>
+      <div class="card-desc" contenteditable="true">${it.desc}</div>
+      <div class="card-row">
+        <div class="card-cell"><div class="cell-label">QTY</div><div class="cell-val" contenteditable="true" data-type="num" inputmode="decimal">${it.qty}</div></div>
+        <div class="card-cell"><div class="cell-label">RATE</div><div class="cell-val" contenteditable="true" data-type="num" inputmode="decimal">${it.rate}</div></div>
+        <div class="card-cell amt"><div class="cell-label">AMOUNT</div><div class="cell-val">${fmt(it.qty * it.rate)}</div></div>
+      </div>
+    `;
+    itemsMobile.appendChild(card);
+  });
+
+  attachRowHandlers();
+  recalc();
+  checkPageFit();
+}
+
+function attachRowHandlers() {
+  itemsBody.querySelectorAll('tr').forEach(tr => {
+    tr.querySelectorAll('[data-type="num"]').forEach(td => {
+      td.addEventListener('input', () => { recalc(); checkPageFit(); });
+      td.addEventListener('blur', () => {
+        const v = parseFloat(td.textContent.replace(/[^0-9.]/g, '')) || 0;
+        td.textContent = v;
+        recalc();
+      });
+    });
+    tr.querySelector('.desc')?.addEventListener('input', () => { recalc(); checkPageFit(); });
+    const del = tr.querySelector('.del-btn');
+    if (del) del.addEventListener('click', () => { tr.remove(); syncAndRenumber(); });
+  });
+
+  itemsMobile.querySelectorAll('.item-card').forEach(card => {
+    card.querySelectorAll('[data-type="num"]').forEach(td => {
+      td.addEventListener('input', () => { recalc(); checkPageFit(); });
+      td.addEventListener('blur', () => {
+        const v = parseFloat(td.textContent.replace(/[^0-9.]/g, '')) || 0;
+        td.textContent = v;
+        recalc();
+      });
+    });
+    card.querySelector('.card-desc')?.addEventListener('input', () => { recalc(); checkPageFit(); });
+    const del = card.querySelector('.card-del');
+    if (del) del.addEventListener('click', () => { card.remove(); syncAndRenumber(); });
+  });
+}
+
+function syncAndRenumber() {
+  const items = gatherItemsFromMobile().length > 0 ? gatherItemsFromMobile() : gatherItemsFromDesktop();
+  renderItems(items);
+}
+
+function gatherItemsFromDesktop() {
+  const items = [];
+  itemsBody.querySelectorAll('tr').forEach(tr => {
+    items.push({
+      desc: tr.querySelector('.desc').innerHTML,
+      qty: parseFloat(tr.querySelector('.qty').textContent) || 0,
+      rate: parseFloat(tr.querySelector('.rate').textContent) || 0
+    });
+  });
+  return items;
+}
+function gatherItemsFromMobile() {
+  const items = [];
+  itemsMobile.querySelectorAll('.item-card').forEach(card => {
+    const cells = card.querySelectorAll('[data-type="num"]');
+    items.push({
+      desc: card.querySelector('.card-desc').innerHTML,
+      qty: parseFloat(cells[0]?.textContent) || 0,
+      rate: parseFloat(cells[1]?.textContent) || 0
+    });
+  });
+  return items;
+}
+
+function fmt(n) {
+  return (Math.round(n * 100) / 100).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function recalc() {
+  const deskRows = itemsBody.querySelectorAll('tr');
+  const mobCards = itemsMobile.querySelectorAll('.item-card');
+  let subtotal = 0;
+
+  deskRows.forEach((tr, i) => {
+    const q = parseFloat(tr.querySelector('.qty')?.textContent) || 0;
+    const r = parseFloat(tr.querySelector('.rate')?.textContent) || 0;
+    const amt = q * r;
+    tr.querySelector('.amt').textContent = fmt(amt);
+    subtotal += amt;
+    if (mobCards[i]) mobCards[i].querySelector('.amt .cell-val').textContent = fmt(amt);
+  });
+
+  const taxLabel = document.querySelector('#tax').parentElement.querySelector('.lbl');
+  const taxMatch = (taxLabel?.textContent || '').match(/(\d+(\.\d+)?)\s*%/);
+  const taxPct = taxMatch ? parseFloat(taxMatch[1]) : 0;
+  const tax = subtotal * taxPct / 100;
+
+  const discLabel = document.querySelector('#discount').parentElement.querySelector('.lbl');
+  const discMatch = (discLabel?.textContent || '').match(/(\d+(\.\d+)?)/);
+  const discount = discMatch ? parseFloat(discMatch[1]) : 0;
+
+  const grand = subtotal + tax - discount;
+  $('subtotal').textContent = fmt(subtotal);
+  $('tax').textContent      = fmt(tax);
+  $('discount').textContent = fmt(discount);
+  $('grand').textContent    = fmt(grand);
+  $('amtWords').textContent = numberToWords(Math.round(grand)).toUpperCase() + ' ONLY';
+}
+
+function numberToWords(num) {
+  if (num === 0) return 'zero';
+  const ones = ['','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
+  const tens = ['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+  function two(n) { if (n < 20) return ones[n]; return tens[Math.floor(n/10)] + (n%10 ? ' ' + ones[n%10] : ''); }
+  function three(n) { if (n < 100) return two(n); return ones[Math.floor(n/100)] + ' hundred' + (n%100 ? ' and ' + two(n%100) : ''); }
+  let crore = Math.floor(num / 10000000); num %= 10000000;
+  let lakh  = Math.floor(num / 100000);   num %= 100000;
+  let thousand = Math.floor(num / 1000);  num %= 1000;
+  let rest = num;
+  let parts = [];
+  if (crore)    parts.push(three(crore) + ' crore');
+  if (lakh)     parts.push(two(lakh) + ' lakh');
+  if (thousand) parts.push(two(thousand) + ' thousand');
+  if (rest)     parts.push(three(rest));
+  return 'Rupees ' + parts.join(' ');
+}
+
+function checkPageFit() {
+  const items = gatherItemsFromMobile().length > 0 ? gatherItemsFromMobile() : gatherItemsFromDesktop();
+  const warn = $('pageWarning');
+  const totalDescLen = items.reduce((s, it) => s + (it.desc || '').length, 0);
+  if (items.length > 7 || totalDescLen > 600) {
+    warn.classList.add('show');
+  } else {
+    warn.classList.remove('show');
+  }
+}
+
+function applyDocType(type) {
+  $('docTitle').textContent = type;
+  $('docTypePill').textContent = type;
+  $('validRow').style.display = (type === 'QUOTATION' || type === 'PROFORMA INVOICE') ? '' : 'none';
+}
+docTypeSel.addEventListener('change', () => applyDocType(docTypeSel.value));
+
+$('logoInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const dataUrl = ev.target.result;
+    $('logoImg').src = dataUrl;
+    $('logoImg').style.display = 'block';
+    $('logoPlaceholder').style.display = 'none';
+    try { localStorage.setItem(LOGO_KEY, dataUrl); } catch(err) {}
+    flash('Logo saved ✓');
+  };
+  reader.readAsDataURL(file);
+});
+
+function extractClientName() {
+  const clientDiv = $('clientInfo');
+  if (!clientDiv) return 'document';
+  const text = clientDiv.textContent || '';
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  if (lines.length > 0) {
+    let name = lines[0].replace(/<[^>]*>/g, '').trim();
+    name = name.replace(/[^\w\s]/g, '').trim();
+    name = name.toLowerCase().replace(/\s+/g, '_');
+    if (name.length > 0 && name.length < 50) return name;
+  }
+  return 'document';
+}
+
+function gatherData() {
+  const items = (itemsMobile.children.length > 0) ? gatherItemsFromMobile() : gatherItemsFromDesktop();
+  return {
+    docType: docTypeSel.value,
+    docNumber: $('docNumber').textContent,
+    html: $('doc').innerHTML,
+    items,
+    clientName: extractClientName()
+  };
+}
+
+function downloadJSON(silent = false) {
+  const data = gatherData();
+  const clientName = data.clientName || 'document';
+  const docType = data.docType.toLowerCase().replace(/\s+/g, '_');
+  const docNum = (data.docNumber || 'doc').replace(/[^a-zA-Z0-9-_]/g, '_');
+  const date = new Date().toISOString().split('T')[0];
+  const filename = `${clientName}_${docType}_${docNum}_${date}.json`;
+  const jsonStr = JSON.stringify(data, null, 2);
+
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  if (isIOS) {
+    const dataUrl = 'data:application/json;charset=utf-8,' + encodeURIComponent(jsonStr);
+    const a = document.createElement('a');
+    a.href = dataUrl; a.download = filename; a.target = '_blank'; a.rel = 'noopener';
+    document.body.appendChild(a); a.click();
+    setTimeout(() => a.remove(), 100);
+  } else {
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
+  if (!silent) flash(`Saved: ${filename}`);
+  return filename;
+}
+
+$('uploadInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      docTypeSel.value = data.docType || 'QUOTATION';
+      applyDocType(docTypeSel.value);
+      $('doc').innerHTML = data.html;
+      $('docNumber').textContent = data.docNumber || $('docNumber').textContent;
+      rebindAll();
+      renderItems(data.items || []);
+      closeMenu();
+      flash('Loaded ✓');
+    } catch (err) { flash('Invalid JSON file'); }
+  };
+  reader.readAsText(file);
+});
+
+function saveDoc() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(gatherData()));
+    flash('Saved to browser ✓');
+  } catch (err) { flash('Save failed'); }
+}
+
+function loadDoc() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) { flash('No saved document'); return; }
+  try {
+    const data = JSON.parse(raw);
+    docTypeSel.value = data.docType || 'QUOTATION';
+    applyDocType(docTypeSel.value);
+    $('doc').innerHTML = data.html;
+    $('docNumber').textContent = data.docNumber || $('docNumber').textContent;
+    rebindAll();
+    renderItems(data.items || []);
+    closeMenu();
+    flash('Loaded ✓');
+  } catch (err) { flash('Load failed'); }
+}
+
+function newDoc() {
+  const items = gatherItemsFromMobile().length > 0 ? gatherItemsFromMobile() : gatherItemsFromDesktop();
+  if (items.length > 0) {
+    if (!confirm('Save current document to device first?')) return;
+    downloadJSON(true);
+  }
+  localStorage.removeItem(STORAGE_KEY);
+  flash('Starting new document...');
+  setTimeout(() => location.reload(), 800);
+}
+
+function clearDoc() {
+  const items = gatherItemsFromMobile().length > 0 ? gatherItemsFromMobile() : gatherItemsFromDesktop();
+  if (items.length > 0) {
+    if (!confirm('Save current document to device, then clear?')) return;
+    downloadJSON(true);
+  } else {
+    if (!confirm('Clear everything?')) return;
+  }
+  localStorage.removeItem(STORAGE_KEY);
+  setTimeout(() => location.reload(), 800);
+}
+
+function rebindAll() {
+  document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+    el.addEventListener('input', recalc);
+  });
+}
+
+function addRow() {
+  const items = (itemsMobile.children.length > 0) ? gatherItemsFromMobile() : gatherItemsFromDesktop();
+  items.push({ desc: 'New item — tap to edit', qty: 1, rate: 0 });
+  renderItems(items);
+  flash('Item added ✓');
+  closeMenu();
+  setTimeout(() => {
+    const last = itemsMobile.lastElementChild || itemsBody.lastElementChild;
+    if (last) last.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 100);
+}
+
+$('addRow').addEventListener('click', addRow);
+$('addRowBottom').addEventListener('click', addRow);
+$('downloadBtn').addEventListener('click', () => { downloadJSON(false); closeMenu(); });
+$('downloadBtnBottom').addEventListener('click', () => downloadJSON(false));
+$('saveBtn').addEventListener('click', () => { saveDoc(); closeMenu(); });
+$('saveBtnBottom').addEventListener('click', saveDoc);
+$('loadBtn').addEventListener('click', loadDoc);
+$('newBtn').addEventListener('click', () => { newDoc(); closeMenu(); });
+$('clearBtn').addEventListener('click', () => { clearDoc(); closeMenu(); });
+$('printBtn').addEventListener('click', () => { closeMenu(); setTimeout(() => window.print(), 200); });
+$('printBtnBottom').addEventListener('click', () => window.print());
+
+function flash(msg) {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const d = document.createElement('div');
+  d.className = 'toast';
+  d.textContent = msg;
+  document.body.appendChild(d);
+  setTimeout(() => d.remove(), 2000);
+}
+
+(function init() {
+  const d = new Date();
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  $('docDate').textContent = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+
+  const savedLogo = localStorage.getItem(LOGO_KEY);
+  if (savedLogo) {
+    $('logoImg').src = savedLogo;
+    $('logoImg').style.display = 'block';
+    $('logoPlaceholder').style.display = 'none';
+  }
+
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      docTypeSel.value = data.docType || 'QUOTATION';
+      applyDocType(docTypeSel.value);
+      $('doc').innerHTML = data.html;
+      $('docNumber').textContent = data.docNumber || $('docNumber').textContent;
+      rebindAll();
+      renderItems(data.items || []);
+      return;
+    } catch(e) {}
+  }
+
+  applyDocType('QUOTATION');
+  $('docNumber').textContent = getNextNumber('QUOTATION');
+  renderItems(defaultItems);
+  document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+    el.addEventListener('input', recalc);
+  });
+})();
+
+let lastTouch = 0;
+document.addEventListener('touchend', (e) => {
+  const now = Date.now();
+  if (now - lastTouch <= 300) e.preventDefault();
+  lastTouch = now;
+}, { passive: false });
+</script>
+</body>
+</html>
