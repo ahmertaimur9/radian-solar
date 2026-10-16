@@ -2,7 +2,7 @@
   "name": "Radian Solar Solutions",
   "short_name": "Radian Solar",
   "description": "Professional Quotation and Invoice Generator",
-  "start_url": "./radian.html",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
